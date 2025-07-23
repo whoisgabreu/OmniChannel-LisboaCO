@@ -1,0 +1,22 @@
+<div class="top-bar">
+<div class="menu" onclick="toggleClasse()">
+    <img src="{{ url_for('static', filename='images/V4LOGO.png') }}" alt="Logo">
+    <p>☰ Menu</p>
+</div>
+
+<div class="profile-info">
+    <p>Olá, {{ session["nome"] }}!</p>
+    <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+</div>
+
+</div>
+
+<div class="sidebar">
+{% if session["admin"] %}
+<!-- <p class="error-message">{{ erro }}</p> -->
+    <a href="{{url_for('gerenciar_usuarios')}}">Gerenciar Usuários</a>
+{% endif %}
+<a href="{{url_for('home')}}">Pipefy - Cards</a>
+<!-- <a href="{{url_for('dashboards')}}">Dashboards</a> -->
+
+</div>

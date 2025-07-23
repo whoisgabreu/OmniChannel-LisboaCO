@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>(Protótipo)V4 Lisboa&CO - Login</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-criar-usuario.css') }}"> 
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <head>
+        <title>Login</title>
+    </head>
+
+<body>
+    <div class="tela" id="tela2">
+        <div class="container">
+            <img src="{{ url_for('static', filename='images/V4LOGO.png') }}" style="height:100px; width:100px"
+                alt="Logo">
+            <h2>Lisboa&CO</h2>
+            <form method="POST">
+                <div class="register-field">
+
+                    <input type="email" name="email" required placeholder="E-mail">
+    
+                    <input type="password" name="senha" required placeholder="Senha">
+                    <!-- <input type="password" name="senha" required placeholder="Confirmar senha"> -->
+    
+                    <input type="text" name="nome" required placeholder="Nome Completo">
+                    <input type="text" name="cargo" required placeholder="Cargo">
+    
+    
+                    <div class="select-container">
+                        <label for="Squad">Squad:</label>
+                        <select id="squad" name="squad">
+                            <option value="">Selecione</option>
+                            <option value="Tecnologia">Tecnologia</option>
+                            <option value="Shark">Shark</option>
+                            <option value="Internacional">Internacional</option>
+                            <option value="Capivaras">Capivaras</option>
+                            <option value="Xeque Mate">Xeque Mate</option>
+                            <option value="Midas">Midas</option>
+                            <option value="São Bento">São Bento</option>
+                            <option value="Carcará">Carcará</option>
+                            <option value="Comercial">Comercial</option>
+                            <option value="Balneário">Balneário</option>
+                            <option value="X Lite">X Lite</option>
+                            <option value="Águia">Águia</option>
+                        </select>
+                    </div>
+    
+                    <div class="select-container">
+                        <label for="Unidade">Unidade:</label>
+                        <select id="unidade" name="unidade">
+                            <option value="">Selecione</option>
+                            <option value="Pampulha">Pampulha</option>
+                            <option value="Balneário">Balneário</option>
+                            <option value="São Bento">São Bento</option>
+                            <option value="Goiânia">Goiânia</option>
+                        </select>
+                    </div>
+    
+                    <button type="submit">Cadastrar</button>
+
+                </div>
+            </form>
+            {% if erro %}
+            <script>alert('{{erro}}')</script>
+            {% endif %}
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

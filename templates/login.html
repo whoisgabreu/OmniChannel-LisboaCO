@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>(Protótipo)V4 Lisboa&CO - Login</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-criar-usuario.css') }}"> 
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <head>
+        <title>Login</title>
+    </head>
+
+<body>
+    <div class="tela" id="tela1" style="display: block;">
+        <div class="container">
+            <img src="{{ url_for('static', filename='images/V4LOGO.png') }}" style="height:100px; width:100px"
+                alt="Logo">
+            <h2>Lisboa&CO</h2>
+            <form method="POST">
+
+                <div class="login-field">
+                    <!-- <label>Usuário:</label><br> -->
+                    <i class="fa fa-user"></i>
+                    <input type="text" placeholder="E-mail" name="username" required><br><br>
+                </div>
+
+                <div class="password-field">
+                    <!-- <label>Senha:</label><br> -->
+                    <i class="fa fa-lock"></i>
+                    <input type="password" placeholder="Senha" name="password" required><br><br>
+                </div>
+
+                <button type="submit">LOGIN</button>
+            </form>
+            {% if erro %}
+            <script>alert('{{erro}}')</script>
+            {% endif %}
+        </div>
+        <p>Ainda não está cadastrado? <a href="{{url_for('register')}}">Só clicar aqui 😊</a></p>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

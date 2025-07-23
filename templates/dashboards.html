@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, minimum-scale=1.0">
+  <title>(Protótipo)V4 Lisboa&CO</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style-home.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  {% include 'components/navbar.html' %}
+
+
+  <div class="main-content">
+
+    <!-- View 2 -->
+    <div id="tela2" class="tela">
+
+        <h1 class="title-tela">Dashboards</h1>
+        <p>Em desenvolvimento</p>
+    </div>
+
+  </div>
+
+  <script type="text/javascript" src="/eel.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

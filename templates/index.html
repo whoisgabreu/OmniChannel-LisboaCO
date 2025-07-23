@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, minimum-scale=1.0">
+  <title>(Protótipo)V4 Lisboa&CO</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style-home.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  {% include 'components/navbar.html' %}
+
+
+  <div class="main-content">
+
+    <div id="tela1" class="tela">
+        <h1 class="title-tela">Cards Pipefy</h1>
+      
+        <div id="header">
+
+          <input type="text" id="searchInput" class="search" placeholder="Pesquisar ID, Título ou CNPJ">
+
+          <select id="filtroSquad">
+            <option value="">Todas Squads</option>
+          </select>
+
+          <select id="filtroUnidade">
+            <option value="">Todas Unidades</option>
+          </select>
+
+          <select id="filtroPagamento">
+            <option value="">Todos Modelos de Pagamento</option>
+          </select>
+
+          <select id="filtroFase">
+            <option value="">Todas Fases</option>
+          </select>
+          
+        </div>
+        
+
+        <div class="container">
+
+          <div class="cards-frame" id="cards-frame">
+            <!-- Cards inseridos aqui por Javascript -->
+          </div>
+  
+          <div class="details-frame" id="details-frame">
+            <p>Selecione um card à esquerda para ver os detalhes</p>
+          </div>
+
+          <div class="resultados">
+            <p id="contador-resultados"></p>
+  
+            <button id="download-xlsx" onclick="exportarParaExcel(cardsFiltrados)"><i class="fa-solid fa-download"></i> Download</button>
+          </div>
+
+
+        </div>
+
+
+    </div>
+
+  </div>
+
+  <!-- APAGAR -->
+<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <script type="module">
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+        createChat({
+            webhookUrl: 'https://n8n.v4lisboatech.com.br/webhook/386b7166-a18d-4da9-8036-f3f36c420618/chat',
+            webhookConfig: {
+                method: 'POST',
+                headers: {}
+            },
+            target: '#n8n-chat',
+            mode: 'window',
+            chatInputKey: 'chatInput',
+            chatSessionKey: 'sessionId',
+            loadPreviousSession: true,
+            metadata: {},
+            showWelcomeScreen: false,
+            defaultLanguage: 'pt',
+            initialMessages: [
+                'Aoba, fi! Bão? 👋',
+                'Meu nome é Jorgin. Como posso te ajudar?'
+            ],
+            i18n: {
+                en: {
+                    title: 'Loja do Jorgin',
+                    subtitle: "Vamo lá. Tô aqui pra te ajudar.",
+                    footer: '',
+                    getStarted: 'New Conversation',
+                    inputPlaceholder: 'Sua dúvida aqui...',
+                },
+            },
+        });
+    </script>
+  <!-- ----------------------- -->
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</body>
+</html>
