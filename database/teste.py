@@ -55,19 +55,19 @@ usuarios = session.query(Usuario).all()
 for u in usuarios:
     print(u)
 
-# 3. Atualizar um campo
-usuario_para_editar = session.query(Usuario).filter_by(email="martins.gabriel@v4company.com").first()
-if usuario_para_editar:
-    usuario_para_editar.ativo = True
-    session.commit()
-    print(f"\n🔄 Usuário atualizado: {usuario_para_editar}")
-
-# # 4. Deletar um usuário
-# usuario_para_deletar = session.query(Usuario).filter_by(email="maria@email.com").first()
-# if usuario_para_deletar:
-#     session.delete(usuario_para_deletar)
+# # 3. Atualizar um campo
+# usuario_para_editar = session.query(Usuario).filter_by(email="martins.gabriel@v4company.com").first()
+# if usuario_para_editar:
+#     usuario_para_editar.ativo = True
 #     session.commit()
-#     print(f"\n❌ Usuário deletado: {usuario_para_deletar}")
+#     print(f"\n🔄 Usuário atualizado: {usuario_para_editar}")
+
+# 4. Deletar um usuário
+usuario_para_deletar = session.query(Usuario).filter_by(email="fernanda@teste.com.br").first()
+if usuario_para_deletar:
+    session.delete(usuario_para_deletar)
+    session.commit()
+    print(f"\n❌ Usuário deletado: {usuario_para_deletar}")
 
 # 5. Verificar usuários restantes
 print("\n📋 Usuários restantes:")
