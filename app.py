@@ -207,9 +207,9 @@ def logout():
 def get_cards():
     return jsonify(cards["data"])
 
-if __name__ == "__main__":
-    thread = threading.Thread(target = agendador)
-    thread.daemon = True
-    thread.start()
+thread = threading.Thread(target = agendador)
+thread.daemon = True
+thread.start()
+# if __name__ == "__main__":
     # app.run(host="0.0.0.0", port=5005)
     # app.run(debug=True)
