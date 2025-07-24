@@ -210,6 +210,8 @@ def get_cards():
 thread = threading.Thread(target = agendador)
 thread.daemon = True
 thread.start()
+
+print("Totalmente iniciado")
+
 # if __name__ == "__main__":
-    # app.run(host="0.0.0.0", port=5005)
-    # app.run(debug=True)
+#     app.run(host="0.0.0.0", port=5005)
