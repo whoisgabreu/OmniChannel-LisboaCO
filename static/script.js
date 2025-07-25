@@ -1,3 +1,6 @@
+
+
+
 // Troca de tela
 function mostrarTela(idTela) {
   document.querySelectorAll(".tela").forEach(tela => {
@@ -36,6 +39,7 @@ function renderizarCards(cards) {
         
           <p><b>CNPJ:</b> ${card["Cliente - CNPJ"]}</p>
           <p><b>Cliente:</b> ${card["title"]}</p>
+          <p><b>Data Início:</b> ${card["Data - Início de Projeto"]}</p>
           <p><b>Contrato</b>: ${card["Contrato - Modelo de Pagamento"]}</p>
           <p><b>Squad</b>: ${card["Squad Atribuída"]}</p>
           <p><b>Fase Atual</b>: ${card["fase"]}</p>
@@ -137,6 +141,15 @@ async function prepararFiltros() {
   await renderizarLista(fases, "filtroFase");
 }
 
+// Altera a classe temporáriamente
+function toggleClassTemporarily(element, className) {
+    element.classList.add(className);
+
+    setTimeout(() => {
+        element.classList.remove(className);
+    }, 2000);
+}
+
 // Alterar Classe de elemento
 
 function toggleClasse() {
@@ -157,21 +170,40 @@ document.getElementById("filtroUnidade").addEventListener("change", aplicarFiltr
 document.getElementById("filtroPagamento").addEventListener("change", aplicarFiltro);
 document.getElementById("filtroFase").addEventListener("change", aplicarFiltro);
 
+document.getElementById("ordenarPor").addEventListener("change", aplicarFiltro);
+
+function parseDataSeguro(dataStr) {
+  if (!dataStr) return null;
+  const partes = dataStr.split("/");
+  if (partes.length !== 3) return null;
+  const [dia, mes, ano] = partes;
+  return new Date(`${ano}-${mes}-${dia}`);
+}
+
 function aplicarFiltro() {
   const termo = document.getElementById("searchInput").value.toLowerCase();
   const filtroSquad = document.getElementById("filtroSquad").value.toLowerCase();
   const filtroUnidade = document.getElementById("filtroUnidade").value.toLowerCase();
-  const filtroPagamento = document.getElementById("filtroPagamento").value.toLowerCase()
-  const filtroFase = document.getElementById("filtroFase").value.toLowerCase()
+  const filtroPagamento = document.getElementById("filtroPagamento").value.toLowerCase();
+  const filtroFase = document.getElementById("filtroFase").value.toLowerCase();
 
-  const filtrados = todosCards.filter(card => {
+  const ordenarPor = document.getElementById("ordenarPor").value; // ex: "titulo_asc", "data_desc", ""
+
+  // Separar critério e direção
+  let criterio = null;
+  let direcao = null;
+  if (ordenarPor) {
+    [criterio, direcao] = ordenarPor.split("_"); // exemplo: ["titulo", "asc"]
+    console.log([criterio, direcao])
+  }
+
+  let filtrados = todosCards.filter(card => {
     const matchesTexto =
       (card["title"] && card["title"].toLowerCase().includes(termo)) ||
       (card["id"] && card["id"].toString().includes(termo)) ||
       (card["Cliente - CNPJ"] && card["Cliente - CNPJ"].toLowerCase().includes(termo)) ||
       (card["Squad Atribuída"] && card["Squad Atribuída"].toLowerCase().includes(termo)) ||
       (card["Unidade Atribuída"] && card["Unidade Atribuída"].toLowerCase().includes(termo));
-
 
     const matchesSquad = !filtroSquad || (card["Squad Atribuída"] && card["Squad Atribuída"].toLowerCase().includes(filtroSquad));
     const matchesUnidade = !filtroUnidade || (card["Unidade Atribuída"] && card["Unidade Atribuída"].toLowerCase().includes(filtroUnidade));
@@ -180,10 +212,34 @@ function aplicarFiltro() {
 
     return matchesTexto && matchesSquad && matchesUnidade && matchesPagamento && matchesFase;
   });
+
+  if (criterio && direcao) {
+    filtrados.sort((a, b) => {
+      if (criterio === "titulo") {
+        const tituloA = (a["title"] || "").toLowerCase();
+        const tituloB = (b["title"] || "").toLowerCase();
+        const comp = tituloA.localeCompare(tituloB);
+        return direcao === "asc" ? comp : -comp;
+      }
+
+      if (criterio === "data") {
+        const dataA = parseDataSeguro(a["Data - Início de Projeto"]);
+        const dataB = parseDataSeguro(b["Data - Início de Projeto"]);
+        if (dataA && dataB) {
+          return direcao === "asc" ? dataA - dataB : dataB - dataA;
+        }
+        // Se dataA ou dataB forem null, mantem a ordem
+        return 0;
+      }
+
+      return 0;
+    });
+  }
+
   cardsFiltrados = filtrados;
-  console.log(cardsFiltrados.length)
   renderizarCards(filtrados);
 }
+
 
 
 function exportarParaExcel(dados, nomeArquivo = "cards_filtrados.xlsx") {

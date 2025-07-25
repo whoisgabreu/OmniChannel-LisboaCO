@@ -17,6 +17,9 @@
     </head>
 
 <body>
+    <div id="errorMessage">
+        <p>Opa! {{erro}}</p>
+    </div>
     <div class="tela" id="tela1" style="display: block;">
         <div class="container">
             <img src="{{ url_for('static', filename='images/V4LOGO.png') }}" style="height:100px; width:100px"
@@ -26,26 +29,45 @@
 
                 <div class="login-field">
                     <!-- <label>Usuário:</label><br> -->
-                    <i class="fa fa-user"></i>
+                    <i class="fa fa-envelope"></i>
                     <input type="text" placeholder="E-mail" name="username" required><br><br>
                 </div>
 
                 <div class="password-field">
-                    <!-- <label>Senha:</label><br> -->
                     <i class="fa fa-lock"></i>
-                    <input type="password" placeholder="Senha" name="password" required><br><br>
+                    <input type="password" id="senha" placeholder="Senha" name="password" required>
+                    <i id="toggleSenha" class="fa fa-eye toggle-eye"></i>
                 </div>
 
                 <button type="submit">LOGIN</button>
             </form>
             {% if erro %}
-            <script>alert('{{erro}}')</script>
+            <script>
+                window.addEventListener("DOMContentLoaded", () => {
+                    const input = document.getElementById("errorMessage");
+                    if (input) {
+                        toggleClassTemporarily(input, "erro");
+                    }
+                });
+            </script>
             {% endif %}
         </div>
         <p>Ainda não está cadastrado? <a href="{{url_for('register')}}">Só clicar aqui 😊</a></p>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        const senhaInput = document.getElementById("senha");
+        const toggleIcon = document.getElementById("toggleSenha");
+
+        toggleIcon.addEventListener("click", () => {
+            const isPassword = senhaInput.type === "password";
+            senhaInput.type = isPassword ? "text" : "password";
+            toggleIcon.classList.toggle("fa-eye");
+            toggleIcon.classList.toggle("fa-eye-slash");
+        });
+    </script>
+
 
 </body>
 

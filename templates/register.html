@@ -7,7 +7,7 @@
     <title>(Protótipo)V4 Lisboa&CO - Login</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style-login.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style-criar-usuario.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-criar-usuario.css') }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -17,6 +17,9 @@
     </head>
 
 <body>
+    <div id="errorMessage">
+        <p>Opa! {{erro}}</p>
+    </div>
     <div class="tela" id="tela2">
         <div class="container">
             <img src="{{ url_for('static', filename='images/V4LOGO.png') }}" style="height:100px; width:100px"
@@ -24,20 +27,38 @@
             <h2>Lisboa&CO</h2>
             <form method="POST">
                 <div class="register-field">
+                    
+                    <div class="input-container">
+                        <i class="fa fa-user"></i>
+                        <input type="text" name="nome" required placeholder="Nome Completo">
+                    </div>
+                    <div class="input-container">
+                        <i class="fa fa-envelope"></i>
+                        <input type="email" name="email" required placeholder="E-mail">
+                    </div>
 
-                    <input type="email" name="email" required placeholder="E-mail">
-    
-                    <input type="password" name="senha" required placeholder="Senha">
+                    <div class="input-container senha-container">
+                        <i class="fa fa-lock"></i>
+                        <input type="password" name="senha" id="senha" required placeholder="Senha">
+                        <i class="fa fa-eye toggle-eye" onclick="toggleSenha('senha', this)"></i>
+                    </div>
+
+                    <div class="input-container senha-container">
+                        <i class="fa fa-lock"></i>
+                        <input type="password" name="confirmar-senha" id="confirmar-senha" required placeholder="Confirmar senha">
+                        <i class="fa fa-eye toggle-eye" onclick="toggleSenha('confirmar-senha', this)"></i>
+                    </div>
                     <!-- <input type="password" name="senha" required placeholder="Confirmar senha"> -->
-    
-                    <input type="text" name="nome" required placeholder="Nome Completo">
-                    <input type="text" name="cargo" required placeholder="Cargo">
-    
-    
-                    <div class="select-container">
-                        <label for="Squad">Squad:</label>
+
+                    <div class="input-container">
+                        <i class="fa fa-briefcase"></i>
+                        <input type="text" name="cargo" required placeholder="Cargo">
+                    </div>
+
+                    <div class="input-container">
+                        <i class="fa fa-people-group"></i>
                         <select id="squad" name="squad">
-                            <option value="">Selecione</option>
+                            <option value="">Selecione a Squad</option>
                             <option value="Tecnologia">Tecnologia</option>
                             <option value="Shark">Shark</option>
                             <option value="Internacional">Internacional</option>
@@ -52,28 +73,93 @@
                             <option value="Águia">Águia</option>
                         </select>
                     </div>
-    
-                    <div class="select-container">
-                        <label for="Unidade">Unidade:</label>
+
+                    <div class="input-container">
+                        <i class="fa fa-building-un"></i>
                         <select id="unidade" name="unidade">
-                            <option value="">Selecione</option>
+                            <option value="">Selecione a Unidade</option>
                             <option value="Pampulha">Pampulha</option>
                             <option value="Balneário">Balneário</option>
                             <option value="São Bento">São Bento</option>
                             <option value="Goiânia">Goiânia</option>
                         </select>
                     </div>
-    
+
                     <button type="submit">Cadastrar</button>
 
                 </div>
             </form>
             {% if erro %}
-            <script>alert('{{erro}}')</script>
+            <script>
+                window.addEventListener("DOMContentLoaded", () => {
+                    const input = document.getElementById("errorMessage");
+                    if (input) {
+                        toggleClassTemporarily(input, "erro");
+                    }
+                });
+            </script>
             {% endif %}
         </div>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+    function toggleSenha(id, icon) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        const senha = document.getElementById("senha");
+        const confirmarSenha = document.getElementById("confirmar-senha");
+        const erroDiv = document.getElementById("errorMessage");
+
+        form.addEventListener("submit", function (e) {
+            if (senha.value !== confirmarSenha.value) {
+                e.preventDefault(); // Impede o envio
+                erroDiv.classList.add("erro");
+                confirmarSenha.classList.add("erro");
+                erroDiv.innerText = "As senhas não coincidem.";
+                setTimeout(() => {
+                    erroDiv.classList.remove("erro");
+                }, 2000);
+            } else {
+                senha.classList.remove("erro");
+                confirmarSenha.classList.remove("erro");
+                erroDiv.innerText = "";
+            }
+        });
+    });
+
+
+    // Comparação de senha
+    const senhaInput = document.getElementById("senha");
+    const confirmarInput = document.getElementById("confirmar-senha");
+
+    function validarSenhas() {
+    if (senhaInput.value !== confirmarInput.value) {
+        senhaInput.classList.add("input-error");
+        confirmarInput.classList.add("input-error");
+    } else {
+        senhaInput.classList.remove("input-error");
+        confirmarInput.classList.remove("input-error");
+    }
+    }
+
+    confirmarInput.addEventListener("input", validarSenhas);
+    senhaInput.addEventListener("input", validarSenhas);
+
+    </script>    
+
 
 </body>
 

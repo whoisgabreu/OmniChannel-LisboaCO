@@ -42,6 +42,7 @@ def agendador():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+
         email = request.form["email"]
         senha = generate_password_hash(request.form["senha"])
         nome = request.form["nome"]
@@ -164,7 +165,7 @@ def login():
             
             return redirect(url_for("home"))
         else:
-            return render_template("login.html", erro = "Usuário ou senha inválidos")
+            return render_template("login.html", erro = "Usuário ou senha inválidos.")
         
     return render_template("login.html")
 
@@ -188,12 +189,7 @@ def gerenciar_usuarios():
 def dashboards():
     if "usuario" not in session:
         return redirect(url_for("login"))
-    
 
-
-
-
-    
     return render_template("dashboards.html")
 
 @app.route("/logout")
@@ -214,4 +210,4 @@ thread.start()
 print("Totalmente iniciado")
 
 # if __name__ == "__main__":
-#     app.run(host="0.0.0.0", port=5005)
+#     app.run(host="0.0.0.0", port=5005, debug = True)
