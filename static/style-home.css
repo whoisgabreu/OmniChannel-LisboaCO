@@ -93,6 +93,7 @@ body {
   box-shadow: 5px 0 10px rgba(0, 0, 0, 0.45);
   margin-top: 2rem;
   transition: 0.3s ease;
+  z-index: 1;
 }
 
 .sidebar h2 {
@@ -141,7 +142,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 4px;
   max-height: 35px;
-  width: 100%;
+  width: 10vw;
 }
 
 #searchInput     { max-width: 100%; }
@@ -164,7 +165,8 @@ body {
 
 .cards-frame,
 .details-frame {
-  width: 45%;
+  font-size: 13px;
+  width: 45vw;
   max-width: 50%;
   min-width: 20%;
   height: 80%;
@@ -174,9 +176,11 @@ body {
   border-bottom-left-radius: 8px;
   box-sizing: border-box;
   overflow-y: scroll;
+  z-index: 0;
 }
 
 .cards-frame {
+  width: 30vw;
   box-shadow: inset 5px -5px 15px rgba(0, 0, 0, 0.45);
 }
 
