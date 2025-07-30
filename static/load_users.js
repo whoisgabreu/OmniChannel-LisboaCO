@@ -58,9 +58,14 @@ function mostrarDetalhesDoCard(id) {
                 </select>
             </div>
 
+            
             <button type="submit">Atualizar</button>
+            
+            </div>
 
-        </div>
+    </form>
+    <form method="POST" action="/resetar-senha/${card.id}">
+        <button type="submit">Resetar senha</button>
     </form>
 
   `;
@@ -116,6 +121,13 @@ function toggleClasse() {
 }
 
 // -------------
+
+// Esconder div de nova senha
+
+function esconderDiv() {
+  document.getElementById("box-reset").style.display = "none";
+}
+
 
 
 // Cria lista com os dados da chave desejada do dicionário

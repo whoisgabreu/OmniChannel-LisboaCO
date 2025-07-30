@@ -32,17 +32,25 @@ function renderizarCards(cards) {
     const cardElement = document.createElement("div");
     cardElement.className = "card";
 
+    let dataFim =  `- <b>Data Fim</b>: N/A`
+
+    if (card["Data Fim - Serviços"]) {
+      dataFim = `- <b>Data Fim</b>: ${card["Data Fim - Serviços"]}`
+    }
+
     cardElement.innerHTML = `
 
       <div class="card-content" role="button" onclick="mostrarDetalhesDoCard(${card.id})">
         <div class="card-info">
         
-          <p><b>CNPJ:</b> ${card["Cliente - CNPJ"]}</p>
-          <p><b>Cliente:</b> ${card["title"]}</p>
-          <p><b>Data Início:</b> ${card["Data - Início de Projeto"]}</p>
-          <p><b>Contrato</b>: ${card["Contrato - Modelo de Pagamento"]}</p>
-          <p><b>Squad</b>: ${card["Squad Atribuída"]}</p>
-          <p><b>Fase Atual</b>: ${card["fase"]}</p>
+          <p><b>• CNPJ:</b> ${card["Cliente - CNPJ"] || "-"}</p>
+          <p><b>• Cliente:</b> ${card["title"] || "-"}</p>
+          <p><b>• Contrato</b>: ${card["Contrato - Modelo de Pagamento"] || "-"}</p>
+          <p><b>• Data Início:</b> ${card["Data - Início de Projeto"] || "-"}</p>
+          <p><b>• Data Fim</b>: ${card["Data Fim - Serviços"] || "-"}</p>
+          <p><b>• Squad</b>: ${card["Squad Atribuída"] || "-"}</p>
+          <p><b>• Fase Atual</b>: ${card["fase"] || "-"}</p>
+
 
         </div>
       </div>

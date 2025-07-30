@@ -166,7 +166,7 @@ body {
 .cards-frame,
 .details-frame {
   font-size: 13px;
-  width: 45vw;
+  width: 55vw;
   max-width: 50%;
   min-width: 20%;
   height: 80%;
@@ -180,7 +180,7 @@ body {
 }
 
 .cards-frame {
-  width: 30vw;
+  width: 22vw;
   box-shadow: inset 5px -5px 15px rgba(0, 0, 0, 0.45);
 }
 
@@ -256,9 +256,10 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  margin-bottom: 0.4rem;
+  margin-bottom: 1.5vh;
   padding-bottom: 0.4vw;
-  border: 1px solid rgba(155, 155, 155, 0.493);
+  border-top: 1px solid rgba(155, 155, 155, 0.493);
+  border-bottom: 1px solid rgba(155, 155, 155, 0.493);
   border-radius: 8px;
   box-sizing: border-box;
   transition: 0.2s;
@@ -293,6 +294,9 @@ body {
 
 .campo div {
   margin-left: 1vw;
+  padding-bottom: 2vh;
+  padding-top: 1vh;
+  padding-right: 1vw;
 }
 
 /* TRANSIÇÕES E ESTADOS */
@@ -303,11 +307,12 @@ body {
   padding-top: 25px;
   transition: 0.3s ease;
   width: 83.5%;
-  max-width: 83.5%
+  max-width: 83.5%;
+
 }
 
 .main-content h1 {
-  padding-left: 4%;
+  padding-left: 8vw
 }
 
 .main-content.change {

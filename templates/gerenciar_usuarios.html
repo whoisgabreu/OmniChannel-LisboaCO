@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, minimum-scale=1.0">
-  <title>(Protótipo)V4 Lisboa&CO</title>
+  <title>V4 Lisboa&CO - Gerenciar Usuários</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style-home.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style-gerenciar-usuarios.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -12,10 +12,27 @@
 
 <body>
 
+
+
   {% include 'components/navbar.html' %}
 
-
   <div class="main-content">
+
+    {% if nova_senha %}
+    <!-- <script>
+        alert(`{{nova_senha}}`)
+    </script> -->
+
+    <div id="box-reset" class="rest-senha" style="display: block">
+      <p>{{usuario}}</p>
+      <p>Nova senha: {{nova_senha}}</p>
+      <button onclick="esconderDiv()">OK</button>
+    </div>
+
+    {% else %}
+    <div id="box-reset" class="rest-senha" style="display: none"></div>
+
+    {% endif %}
 
     <!-- View 1 -->
     <div id="tela1" class="tela">
@@ -54,7 +71,6 @@
 
   </div>
 
-  <script type="text/javascript" src="/eel.js"></script>
   <script src="{{ url_for('static', filename='load_users.js') }}"></script>
 </body>
 
