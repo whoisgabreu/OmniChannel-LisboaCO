@@ -33,6 +33,7 @@ google = oauth.register(
     name='google',
     client_id=client_id,
     client_secret=client_secret,
+    redirect_url = 'https://omni.v4lisboatech.com.br/login/google/authorized',
     access_token_url='https://oauth2.googleapis.com/token',
     access_token_params=None,
     authorize_url='https://accounts.google.com/o/oauth2/auth',
@@ -256,5 +257,5 @@ thread = threading.Thread(target=agendador)
 thread.daemon = True
 thread.start()
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5005, debug=True)
+# if __name__ == "__main__":
+#     app.run(host="0.0.0.0", port=5005, debug=True)
