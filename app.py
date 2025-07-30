@@ -12,6 +12,14 @@ import string
 from werkzeug.security import generate_password_hash, check_password_hash
 from authlib.integrations.flask_client import OAuth
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+client_id = os.getenv("CLIENT_ID")
+client_secret = os.getenv("CLIENT_SECRET")
+
 # Database
 from database import Base, SessionLocal, engine
 from models import Usuario
@@ -23,8 +31,8 @@ app.secret_key = '4815162342'
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id='231756432764-3k6i63al6jimc45r52omcain22epi718.apps.googleusercontent.com',
-    client_secret='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',
+    client_id=client_id,
+    client_secret=client_secret,
     access_token_url='https://oauth2.googleapis.com/token',
     access_token_params=None,
     authorize_url='https://accounts.google.com/o/oauth2/auth',
