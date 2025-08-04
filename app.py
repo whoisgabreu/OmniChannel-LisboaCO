@@ -25,6 +25,7 @@ def get_db():
         db.close()
 
 cards = asyncio.run(ETL.main())
+# cards = []
 
 # Função que será executada a cada 10 minutos
 def tarefa_periodica():
@@ -118,9 +119,6 @@ def atualizar_usuario(id):
     if "usuario" not in session:
         return redirect(url_for("login"))
 
-    if not session["admin"]:
-        return redirect(url_for("home"))
-
     db = SessionLocal()
 
     # Obtenha os dados do formulário
@@ -150,6 +148,46 @@ def atualizar_usuario(id):
     db.commit()
 
     return redirect(url_for("gerenciar_usuarios"))
+
+# Rota para atualizar um usuário
+@app.route("/atualizar_senha", methods=["GET", "POST"])
+def atualizar_senha():
+
+    if "usuario" not in session:
+        return redirect(url_for("login"))
+
+
+    if request.method == "POST":
+
+        db = SessionLocal()
+
+        atual_senha = request.form.get("current-password")
+        nova_senha = request.form.get("new-password")
+        confirmar_senha = request.form.get("confirm-password")
+
+        print(atual_senha, nova_senha)
+
+        if nova_senha == confirmar_senha:
+            print("Pode mudar de senha")
+
+        else:
+            print("Ta errado")
+        
+        # Recupere o usuário do banco
+        usuario = db.get(Usuario, session["id"])
+        if not usuario:
+            db.close()
+            return "Usuário não encontrado", 404
+
+        if check_password_hash(usuario.senha, atual_senha):
+
+        # Atualize os dados
+            usuario.senha = generate_password_hash(nova_senha)
+
+
+            db.commit()
+
+    return render_template("atualizar_senha.html")
 
 # # Rota para deletar um usuário
 # @app.route("/usuarios/<int:id>", methods=["DELETE"])
@@ -238,5 +276,5 @@ thread.start()
 
 print("Totalmente iniciado")
 
-# if __name__ == "__main__":
-#     app.run(host="0.0.0.0", port=5005, debug = True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5005, debug = True)

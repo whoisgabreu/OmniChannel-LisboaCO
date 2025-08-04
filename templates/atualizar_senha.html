@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V4 Lisboa&CO - Alterar Senha</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-atualizar-senha.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    {% include 'components/navbar.html' %}
+
+    <div class="tela" id="tela1" style="display: block;">
+        <div class="container">
+            <form method="POST">
+
+                <!-- Senha Atual -->
+                <div class="current-password-field">
+                    <input class="hide-password password-field" type="password" placeholder="Senha Atual" name="current-password" required>
+                    <i class="fa fa-eye toggle-eye"></i>
+                </div>
+
+                <!-- Nova Senha -->
+                <div class="new-password-field">
+                    <input class="hide-password password-field" type="password" placeholder="Nova Senha" name="new-password" required>
+                    <i class="fa fa-eye toggle-eye"></i>
+                </div>
+
+                <!-- Confirmar Nova Senha -->
+                <div class="confirm-new-password-field">
+                    <input class="hide-password password-field" type="password" placeholder="Confirmar Senha" name="confirm-password" required>
+                    <i class="fa fa-eye toggle-eye"></i>
+                </div>
+
+                <button type="submit">ALTERAR SENHA</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        document.querySelectorAll('.toggle-eye').forEach(function (toggleIcon) {
+            toggleIcon.addEventListener('click', function () {
+                const input = this.previousElementSibling;
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

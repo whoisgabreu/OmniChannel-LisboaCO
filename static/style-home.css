@@ -14,7 +14,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 5%;
+  height: 5vh;
   background-color: black;
   display: flex;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.45);
@@ -23,8 +23,8 @@ body {
 
 .menu {
   position: relative;
-  margin-left: 10px;
-  top: 4px;
+  margin-left: 0.1vw;
+  top: 0.4vh;
   width: 132px;
   height: 85%;
   background-color: black;
@@ -49,8 +49,8 @@ body {
 
 .menu p {
   position: fixed;
-  top: -10px;
-  left: 55px;
+  top: -1.25vh;
+  margin-left: 2vw;
   font-size: 20px;
   color: white;
 }
@@ -117,6 +117,12 @@ body {
 .sidebar .logout {
   position: absolute;
   top: 85%;
+  width: 10rem
+}
+
+.sidebar .alterar-senha {
+  position: absolute;
+  top: 80%;
   width: 10rem
 }
 
