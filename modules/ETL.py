@@ -77,6 +77,8 @@ def format_pipefy_json(pipefy_data):
         formatted[field['name']] = field['value']
     return formatted
 
+
+
 async def main():
     async with aiohttp.ClientSession(headers=HEADERS) as session:
         ids = await extract_id(session)

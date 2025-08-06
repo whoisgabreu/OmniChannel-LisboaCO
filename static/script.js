@@ -71,7 +71,6 @@ function clicarNoCard(id) {
   }
 }
 
-
 function mostrarDetalhesDoCard(id) {
   const card = todosCards.find(c => c.id == id);
   const detalhes = document.getElementById("details-frame");

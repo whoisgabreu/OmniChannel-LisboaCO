@@ -270,11 +270,22 @@ def logout():
 def get_cards():
     return jsonify(cards["data"])
 
+@app.route('/get_cards/<name>')
+def get_specific_card(name):
+
+    for card in cards["data"]:
+        if name.lower() in card.get("title").lower():
+            return jsonify(card)
+    
+    return jsonify({
+        "erro": "deu erro aqui"
+    })
+
 thread = threading.Thread(target = agendador)
 thread.daemon = True
 thread.start()
 
 print("Totalmente iniciado")
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5005, debug = True)
+# if __name__ == "__main__":
+#     app.run(host="0.0.0.0", port=5005, debug = True)
