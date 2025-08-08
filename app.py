@@ -3,6 +3,7 @@ import schedule
 import threading
 import time
 import json
+import os
 import modules.ETL as ETL # Responsável por baixar os cards
 import asyncio
 
@@ -13,8 +14,9 @@ from database import Base, SessionLocal, engine
 from models import Usuario
 
 
+
 app = Flask(__name__)
-app.secret_key = '4815162342'  # Necessário para usar sessão
+app.secret_key = os.urandom(10).hex()  # Necessário para usar sessão
 
 # Dependency
 def get_db():
@@ -280,6 +282,7 @@ def get_specific_card(name):
     return jsonify({
         "erro": "deu erro aqui"
     })
+
 
 thread = threading.Thread(target = agendador)
 thread.daemon = True
