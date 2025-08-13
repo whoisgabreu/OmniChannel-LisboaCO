@@ -31,6 +31,7 @@ cards = asyncio.run(ETL.main())
 
 # Função que será executada a cada 10 minutos
 def tarefa_periodica():
+    global cards
     cards = asyncio.run(ETL.main())
     print("Tarefa executada!")
 
