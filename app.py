@@ -3,20 +3,32 @@ import schedule
 import threading
 import time
 import json
+import requests as req
 import os
 import modules.ETL as ETL # Responsável por baixar os cards
 import asyncio
 
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 
 # Database
 from database import Base, SessionLocal, engine
 from models import Usuario
 
-
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 app = Flask(__name__)
 app.secret_key = os.urandom(10).hex()  # Necessário para usar sessão
+
+def require_api_key(func):
+    def wrapper(*args, **kwargs):
+        key = request.headers.get("X-API-KEY")
+        if key != API_KEY:
+            return jsonify({"error": "Unauthorized"}), 401
+        return func(*args, **kwargs)
+    wrapper.__name__ = func.__name__
+    return wrapper
 
 # Dependency
 def get_db():
@@ -273,6 +285,7 @@ def logout():
 def get_cards():
     return jsonify(cards["data"])
 
+# Endpoint usado como tool pelo agente do Chatbot para analisar informações do card do cliente
 @app.route('/get_cards/<name>')
 def get_specific_card(name):
 
@@ -284,6 +297,90 @@ def get_specific_card(name):
         "erro": "deu erro aqui"
     })
 
+
+# Endpoint usado como tool pelo agente do Chatbot para analisar valores
+@app.route("/vendas/recorrente/squad", methods=["GET"])
+# Lembrar de colocar a autenticação "gabrielbucetinha123" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NÃO ESQUECER
+@require_api_key
+def calcular_recorrencia_squad():
+    def formatar_valor_monetario(valor):
+        """
+        Formata um valor float no padrão monetário brasileiro.
+        """
+        valor_formatado = f"R$ {valor:,.2f}".replace(",", "TEMP").replace(".", ",").replace("TEMP", ".")
+        return valor_formatado
+
+    def extrair_valor_fee(item):
+        """
+        Extrai e converte o valor de fee de um item, considerando o câmbio se necessário.
+        """
+        for chave, valor in item.items():
+            if "fee" in chave.lower() and valor:
+                # valor_limpo = valor.strip().replace("\xa0", "").replace(",", ".")
+                valor_limpo = valor
+                try:
+                    valor_fee = float(valor_limpo)
+                    if item.get("Sigla - Câmbio") == "USD":
+                        # cambio = float(item.get("Cotação - Câmbio", "1").replace(",", "."))
+                        cambio = float(item.get("Cotação - Câmbio", "1"))
+                        return valor_fee * cambio
+                    return valor_fee
+                except ValueError:
+                    print(f"[WARN] Valor inválido para conversão: {valor_limpo}")
+        return 0.0
+
+    # Obter o parâmetro de query
+    squad_param = request.args.get("squad_id", "").lower()
+
+    # Coletar dados da planilha
+    response = req.get("https://n8n.v4lisboatech.com.br/webhook/planilha-clientes") # Webhook (Workflow: GL > Webhooks Importantes) que retorna os dados da planilha [Lisboa & CO] - Operação SQUADS (Aba: Clientes)
+    dados = response.json()
+
+    # Inicialização de variáveis
+    receita_recorrente_ativa = receita_recorrente_churn = receita_one_time = 0.0
+    qtd_ativo_recorrente = qtd_churn_recorrente = qtd_ativo_one_time = 0
+    nome_squad = ""
+    CONTRATO_RECORRENTE = "Recorrente"
+    CONTRATO_ONE_TIME = "One Time"
+
+    # Processamento dos dados
+    for item in dados:
+        if squad_param in item.get("Squad", "").lower():
+            nome_squad = item.get("Squad", "")
+
+            status = item.get("Status")
+            contrato = item.get("Modal - Contrato")
+
+            if status == "Churn" and contrato == CONTRATO_RECORRENTE:
+                qtd_churn_recorrente += 1
+                receita_recorrente_churn += extrair_valor_fee(item)
+
+            elif status == "Ativo" and contrato == CONTRATO_RECORRENTE:
+                qtd_ativo_recorrente += 1
+                receita_recorrente_ativa += extrair_valor_fee(item)
+
+            elif status == "Ativo" and contrato == CONTRATO_ONE_TIME:
+                qtd_ativo_one_time += 1
+                receita_one_time += extrair_valor_fee(item)
+
+    # Montagem do JSON de resposta
+    resposta = {
+        "success": True,
+        "squad": nome_squad,
+        "recorrente": {
+            "projetos_ativos": qtd_ativo_recorrente,
+            "projetos_churn": qtd_churn_recorrente,
+            "receita_recorrente_ativa": formatar_valor_monetario(receita_recorrente_ativa),
+            "receita_recorrente_churn": formatar_valor_monetario(receita_recorrente_churn)
+        },
+        "one_time": {
+            "projetos": qtd_ativo_one_time,
+            "receita_one_time": formatar_valor_monetario(receita_one_time)
+        },
+        "total_receita": formatar_valor_monetario(receita_recorrente_ativa + receita_one_time)
+    }
+
+    return jsonify(resposta)
 
 thread = threading.Thread(target = agendador)
 thread.daemon = True
