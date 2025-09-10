@@ -1,7 +1,8 @@
 import requests as req
 import json
 
-url = "http://omni.v4lisboatech.com.br/vendas/recorrente/squad?squad_id=carcará"
+# url = "http://omni.v4lisboatech.com.br/vendas/recorrente/squad?squad_id=carcará"
+url = "http://omni.v4lisboatech.com.br/projetos/fases?fase=ongoing"
 
 header = {
     "Content-Type": "application/json",

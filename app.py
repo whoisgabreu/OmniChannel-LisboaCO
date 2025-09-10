@@ -391,6 +391,7 @@ def calcular_recorrencia_squad():
 
 # Recorrência Geral
 @app.route("/vendas/recorrente/geral", methods=["GET"])
+@require_api_key
 def calcular_recorrencia_geral():
     def formatar_valor_monetario(valor):
         """
@@ -467,6 +468,7 @@ def calcular_recorrencia_geral():
 
 # Analise de projetos por fase
 @app.route("/projetos/fases", methods=["GET"])
+@require_api_key
 def contar_fases_projetos():
     def normalizar_fase(fase_texto):
         """
