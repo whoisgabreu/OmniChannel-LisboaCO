@@ -2,4 +2,4 @@ venv
 venv/
 /venv
 .venv
-C:\Users\glam-\OneDrive\Documentos\Projetos\ProjetosV4\VPS - OmniChanel - V4Lisboa&CO\meubanco.db
+*.db
