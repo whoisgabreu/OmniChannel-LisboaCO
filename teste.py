@@ -1,7 +1,7 @@
 import requests as req
+import json
 
-
-url = "http://127.0.0.1:5005/vendas/recorrente/squad?squad_id=internacional"
+url = "http://omni.v4lisboatech.com.br/vendas/recorrente/squad?squad_id=carcará"
 
 header = {
     "Content-Type": "application/json",
@@ -11,4 +11,4 @@ header = {
 
 response = req.get(url = url, headers = header)
 
-print(response.json())
+print(json.dumps(response.json(), indent = 2, ensure_ascii = False))

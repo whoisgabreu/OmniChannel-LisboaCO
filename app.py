@@ -8,6 +8,8 @@ import os
 import modules.ETL as ETL # Responsável por baixar os cards
 import asyncio
 
+from collections import Counter
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
@@ -298,6 +300,10 @@ def get_specific_card(name):
     })
 
 
+
+
+# >>>>>>>>>>>>>>>>> TOOLS DO AGENTE ABAIXO <<<<<<<<<<<<<<<<<<
+
 # Endpoint usado como tool pelo agente do Chatbot para analisar valores
 @app.route("/vendas/recorrente/squad", methods=["GET"])
 # Lembrar de colocar a autenticação "gabrielbucetinha123" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NÃO ESQUECER
@@ -378,6 +384,159 @@ def calcular_recorrencia_squad():
             "receita_one_time": formatar_valor_monetario(receita_one_time)
         },
         "total_receita": formatar_valor_monetario(receita_recorrente_ativa + receita_one_time)
+    }
+
+    return jsonify(resposta)
+
+
+# Recorrência Geral
+@app.route("/vendas/recorrente/geral", methods=["GET"])
+def calcular_recorrencia_geral():
+    def formatar_valor_monetario(valor):
+        """
+        Formata um valor float no padrão monetário brasileiro.
+        """
+        valor_formatado = f"R$ {valor:,.2f}".replace(",", "TEMP").replace(".", ",").replace("TEMP", ".")
+        return valor_formatado
+
+    def extrair_valor_fee(item):
+        """
+        Extrai e converte o valor de fee de um item, considerando o câmbio se necessário.
+        """
+        for chave, valor in item.items():
+            if "fee" in chave.lower() and valor:
+                # valor_limpo = valor.strip().replace("\xa0", "").replace(",", ".")
+                valor_limpo = valor
+                try:
+                    valor_fee = float(valor_limpo)
+                    if item.get("Sigla - Câmbio") == "USD":
+                        # cambio = float(item.get("Cotação - Câmbio", "1").replace(",", "."))
+                        cambio = float(item.get("Cotação - Câmbio", "1"))
+                        return valor_fee * cambio
+                    return valor_fee
+                except ValueError:
+                    print(f"[WARN] Valor inválido para conversão: {valor_limpo}")
+        return 0.0
+
+
+    # Coletar dados da planilha
+    response = req.get("https://n8n.v4lisboatech.com.br/webhook/planilha-clientes") # Webhook (Workflow: GL > Webhooks Importantes) que retorna os dados da planilha [Lisboa & CO] - Operação SQUADS (Aba: Clientes)
+    dados = response.json()
+
+    # Inicialização de variáveis
+    receita_recorrente_ativa = receita_recorrente_churn = receita_one_time = 0.0
+    qtd_ativo_recorrente = qtd_churn_recorrente = qtd_ativo_one_time = 0
+    CONTRATO_RECORRENTE = "Recorrente"
+    CONTRATO_ONE_TIME = "One Time"
+
+    # Processamento dos dados
+    for item in dados:
+        status = item.get("Status")
+        contrato = item.get("Modal - Contrato")
+
+        if status == "Churn" and contrato == CONTRATO_RECORRENTE:
+            qtd_churn_recorrente += 1
+            receita_recorrente_churn += extrair_valor_fee(item)
+
+        elif status == "Ativo" and contrato == CONTRATO_RECORRENTE:
+            qtd_ativo_recorrente += 1
+            receita_recorrente_ativa += extrair_valor_fee(item)
+
+        elif status == "Ativo" and contrato == CONTRATO_ONE_TIME:
+            qtd_ativo_one_time += 1
+            receita_one_time += extrair_valor_fee(item)
+
+    # Montagem do JSON de resposta
+    resposta = {
+        "success": True,
+        "recorrente": {
+            "projetos_ativos": qtd_ativo_recorrente,
+            "projetos_churn": qtd_churn_recorrente,
+            "receita_recorrente_ativa": formatar_valor_monetario(receita_recorrente_ativa),
+            "receita_recorrente_churn": formatar_valor_monetario(receita_recorrente_churn)
+        },
+        "one_time": {
+            "projetos": qtd_ativo_one_time,
+            "receita_one_time": formatar_valor_monetario(receita_one_time)
+        },
+        "total_receita": formatar_valor_monetario(receita_recorrente_ativa + receita_one_time)
+    }
+
+    return jsonify(resposta)
+
+
+# Analise de projetos por fase
+@app.route("/projetos/fases", methods=["GET"])
+def contar_fases_projetos():
+    def normalizar_fase(fase_texto):
+        """
+        Mapeia uma fase interna da planilha para um nome padronizado.
+        """
+        mapa_fases = {
+            "onboarding": ["ONB"],
+            "one_time": ["ONE TIME"],
+            "churn": ["CHURN"],
+            "ongoing": ["Ongoing"],
+            "offboarding": ["Offboarding"],
+            "perda_vendas": ["Perda de vendas"],
+        }
+        for nome_padrao, palavras_chave in mapa_fases.items():
+            if any(p in fase_texto for p in palavras_chave):
+                return nome_padrao
+        return "desconhecida"
+
+    def obter_dados_planilha():
+        """
+        Requisição aos dados da planilha via webhook.
+        """
+        try:
+            url = "https://n8n.v4lisboatech.com.br/webhook/planilha-clientes"
+            response = req.get(url)
+            return response.json()
+        except Exception as e:
+            print(f"[ERRO] Falha ao obter dados da planilha: {e}")
+            return []
+
+    # Query param: ?fase=onboarding,churn,ongoing
+    fases_solicitadas = request.args.get("fase", "")
+    fases_solicitadas = [f.strip().lower() for f in fases_solicitadas.split(",") if f.strip()]
+
+    # Obtem os dados reais da planilha
+    dados = obter_dados_planilha()
+
+    # Contar os projetos por fase padronizada
+    contagem_por_fase = Counter()
+    total_projetos = 0
+
+    for item in dados:
+        fase_bruta = item.get("Fase Pipefy", "")
+        fase_norm = normalizar_fase(fase_bruta)
+        contagem_por_fase[fase_norm] += 1
+        total_projetos += 1
+
+    # Identificar fases que o usuário pediu mas não existem nos dados
+    fases_nao_encontradas = [f for f in fases_solicitadas if f not in contagem_por_fase]
+
+    # Montagem dos detalhes das fases
+    detalhes_fase = []
+    for fase_nome in fases_solicitadas:
+        count = contagem_por_fase.get(fase_nome, 0)
+        detalhes_fase.append({
+            "fase": fase_nome,
+            "descricao": f"Fase padronizada: {fase_nome}",
+            "porcentagem_total": f"{round((count / total_projetos) * 100, 2)}%" if total_projetos else 0
+        })
+
+    # Estrutura de resposta final
+    resposta = {
+        "success": True,
+        "resumo": {
+            "total_projetos": total_projetos,
+            "projetos_por_fase": {fase: contagem_por_fase.get(fase, 0) for fase in fases_solicitadas},
+            "fases_nao_encontradas": fases_nao_encontradas,
+            "data_consulta": datetime.utcnow().isoformat()
+        },
+        "detalhes_fase": detalhes_fase
     }
 
     return jsonify(resposta)
