@@ -40,8 +40,8 @@ def get_db():
     finally:
         db.close()
 
-# cards = asyncio.run(ETL.main())
-cards = []
+cards = asyncio.run(ETL.main())
+card_list = cards
 
 # Função que será executada a cada 10 minutos
 def tarefa_periodica():
@@ -285,13 +285,13 @@ def logout():
 # Literalmente usada pra carregar os cards nem JS
 @app.route('/get_cards')
 def get_cards():
-    return jsonify(cards["data"])
+    return jsonify(card_list["data"])
 
 # Endpoint usado como tool pelo agente do Chatbot para analisar informações do card do cliente
 @app.route('/get_cards/<name>')
 def get_specific_card(name):
 
-    for card in cards["data"]:
+    for card in card_list["data"]:
         if name.lower() in card.get("title").lower():
             return jsonify(card)
     
