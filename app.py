@@ -40,8 +40,8 @@ def get_db():
     finally:
         db.close()
 
-cards = asyncio.run(ETL.main())
-# cards = []
+# cards = asyncio.run(ETL.main())
+cards = []
 
 # Função que será executada a cada 10 minutos
 def tarefa_periodica():
