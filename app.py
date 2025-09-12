@@ -543,6 +543,75 @@ def contar_fases_projetos():
 
     return jsonify(resposta)
 
+# Analise de cards dos clientes
+@app.route("/cards/cliente", methods=["GET"])
+@require_api_key
+def analisar_cliente():
+    import json
+
+    # Carregar o JSON original
+    # with open('dados_cliente.json', 'r', encoding='utf-8') as f:
+    #     data = json.load(f)
+
+    cliente = request.args.get("cliente")
+    segmento = request.args.get("segmento")
+
+    response = req.get(f"https://omni.v4lisboatech.com.br/get_cards/{cliente}")
+    data = response.json()
+
+    # Inicializar estrutura segmentada
+    segmentado = {
+        "cliente": {},
+        "projeto": {},
+        "tecnologia": {},
+        "contrato": {},
+        "stakeholders": {},
+        "dados_financeiros": {},
+        "marketing": {},
+        "checklists": {},
+        "documentos": {},
+        "datas": {},
+        "comentarios_e_respostas": {},
+        "links": {},
+        "outros": {}
+    }
+
+    # Mapeamento de palavras-chave por categoria
+    mapeamento = {
+        "cliente": ["Cliente", "CNPJ", "CPF", "Nome Fantasia", "Nome Jurídico", "Público alvo", "PUV", "País", "História", "Faturamento", "Equipe"],
+        "projeto": ["Meta", "Objetivo", "Jornada", "Momento", "Fase", "Squad", "Unidade", "Canal de Aquisição", "Modelo de negócio", "Verba"],
+        "tecnologia": ["CRM", "E-Commerce", "GTM", "Analytics", "Google ADS", "Meta ADS", "Chatbot", "Plataforma", "Sistema"],
+        "contrato": ["Contrato", "Fee", "Serviços Adquiridos", "Moeda", "Pagamento"],
+        "stakeholders": ["Stakeholder", "Vendedor", "Pré Vendas", "Email", "Telefone", "Envolvidos", "Proprietário", "Coordenador"],
+        "dados_financeiros": ["Faturamento", "Fee", "Verba", "Pagamento", "Financeiro", "Margem"],
+        "marketing": ["Marca", "Marketing", "Objeções", "Dores", "Concorrentes", "Canais", "Posicionamento", "Comunicação", "Redes Sociais", "Mídia", "Investimento", "Identidade visual", "Publicidade"],
+        "checklists": ["Checklist", "Demandas", "Final da CALL", "Call", "Growth Class", "Boas Vindas"],
+        "documentos": ["Comprovante", "Contrato - Anexo", "Apresentação", "PDF"],
+        "datas": ["Data", "Hora"],
+        "comentarios_e_respostas": ["Por que", "Justifique", "Observação", "Histórico", "O que", "Como", "Quais", "Qual", "Existe", "E o que", "Resumo", "Você está", "Pra quem"],
+        "links": ["Link", "https://"]
+    }
+
+    # Função para classificar cada campo
+    def classificar_campo(chave):
+        for categoria, palavras in mapeamento.items():
+            if any(palavra.lower() in chave.lower() for palavra in palavras):
+                return categoria
+        return "outros"
+
+    # Reorganizar campos
+    for chave, valor in data.items():
+        categoria = classificar_campo(chave)
+        segmentado[categoria][chave] = valor
+
+
+    if segmento:
+        resultado = segmentado[segmento]
+    else: 
+        resultado = segmentado
+
+    return jsonify(resultado)
+
 thread = threading.Thread(target = agendador)
 thread.daemon = True
 thread.start()
