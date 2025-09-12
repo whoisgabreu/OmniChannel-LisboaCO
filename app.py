@@ -43,6 +43,16 @@ def get_db():
 # cards = asyncio.run(ETL.main())
 cards = []
 
+def carregar_cards_ao_iniciar():
+    global cards
+    try:
+        print("[INFO] Carregando cards iniciais...")
+        cards = asyncio.run(ETL.main())
+        print("[INFO] Cards carregados com sucesso!")
+    except Exception as e:
+        print(f"[ERRO] Falha ao carregar cards iniciais: {e}")
+        cards = {"data": []}  # fallback seguro
+
 # Função que será executada a cada 10 minutos
 def tarefa_periodica():
     global cards
@@ -288,16 +298,17 @@ def get_cards():
     return jsonify(cards["data"])
 
 # Endpoint usado como tool pelo agente do Chatbot para analisar informações do card do cliente
-@app.route('/get_cards/<name>')
+@app.route('/get_cards/<string:name>')
 def get_specific_card(name):
+    if not cards or "data" not in cards:
+        return jsonify({"erro": "Dados ainda não carregados"}), 503
 
-    for card in cards["data"]:
-        if name.lower() in card.get("title").lower():
-            return jsonify(card)
-    
-    return jsonify({
-        "erro": "deu erro aqui"
-    })
+    matching = next((card for card in cards["data"] if name.lower() in card.get("title", "").lower()), None)
+
+    if matching:
+        return jsonify(matching)
+
+    return jsonify({"erro": "Cliente não encontrado"}), 404
 
 
 
@@ -544,19 +555,28 @@ def contar_fases_projetos():
     return jsonify(resposta)
 
 
+def buscar_card_por_nome(cliente_nome):
+    global cards
+    
+    if not cards or "data" not in cards:
+        return None
+
+    for card in cards["data"]:
+        if cliente_nome.lower() in card.get("title", "").lower():
+            return card
+    return None
+
 @app.route("/cards/cliente", methods=["GET"])
 def analisar_cliente():
-    import json
-
-    # Carregar o JSON original
-    # with open('dados_cliente.json', 'r', encoding='utf-8') as f:
-    #     data = json.load(f)
-
     cliente = request.args.get("cliente")
     segmento = request.args.get("segmento")
 
-    response = req.get(f"https://omni.v4lisboatech.com.br/get_cards/{cliente}")
-    data = response.json()
+    if not cliente:
+        return jsonify({"erro": "Parâmetro 'cliente' é obrigatório"}), 400
+
+    data = buscar_card_por_nome(cliente)
+    if not data:
+        return jsonify({"erro": f"Cliente '{cliente}' não encontrado"}), 404
 
     # Inicializar estrutura segmentada
     segmentado = {
@@ -614,6 +634,8 @@ def analisar_cliente():
 thread = threading.Thread(target = agendador)
 thread.daemon = True
 thread.start()
+
+carregar_cards_ao_iniciar()
 
 print("Totalmente iniciado")
 
